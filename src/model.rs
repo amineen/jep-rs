@@ -1,27 +1,31 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VendingRecord {
     #[serde(rename = "_id")]
     pub id: String,
-    pub timestamp: mongodb::bson::DateTime,
-    #[serde(rename = "meterNumber")]
-    pub meter_number: String,
-    pub address: String,
-    pub community: String,
-    #[serde(rename = "customerName")]
-    pub customer_name: String,
-    pub token: String,
+    pub timestamp: DateTime<Utc>,
+    #[serde(rename = "meterNumber", default)]
+    pub meter_number: Option<String>,
+    #[serde(default)]
+    pub address: Option<String>,
+    #[serde(default)]
+    pub community: Option<String>,
+    #[serde(rename = "customerName", default)]
+    pub customer_name: Option<String>,
+    #[serde(default)]
+    pub token: Option<String>,
     #[serde(default)]
     pub tariff: Option<f64>,
     #[serde(default)]
     pub amount: Option<f64>,
     #[serde(default)]
     pub kwh: Option<f64>,
-    #[serde(rename = "userId")]
-    pub user_id: String,
-    #[serde(rename = "vendingStation")]
-    pub vending_station: String,
+    #[serde(rename = "userId", default)]
+    pub user_id: Option<String>,
+    #[serde(rename = "vendingStation", default)]
+    pub vending_station: Option<String>,
 
     #[serde(rename = "fixedCharge", default)]
     pub fixed_charge: Option<f64>,

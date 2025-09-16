@@ -1,0 +1,7 @@
+mod mongodb_vending_record_repo;
+mod vending_record_repository;
+
+pub use mongodb_vending_record_repo::MongoDbVendingRecordRepository;
+pub use vending_record_repository::VendingRecordRepository;
+
+pub type DefaultVendingRecordRepo = MongoDbVendingRecordRepository;

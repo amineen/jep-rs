@@ -52,9 +52,10 @@ pub async fn get_vending_records(
         })),
         Err(e) => {
             eprintln!("Error fetching vending records: {}", e);
+            eprintln!("Error details: {:?}", e);
             Ok(HttpResponse::InternalServerError().json(ApiResponse::<()> {
                 success: false,
-                message: "Failed to fetch vending records".to_string(),
+                message: "Failed to fetch vending records due to data format issues. Check server logs for details.".to_string(),
                 data: None,
             }))
         }

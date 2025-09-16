@@ -2,16 +2,16 @@ use crate::model::VendingRecord;
 use crate::repositories::VendingRecordRepository;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
-use mongodb::Client;
+use mongodb::{Collection, bson::doc};
 use std::error::Error;
 
 pub struct MongoDbVendingRecordRepository {
-    client: Client,
+    collection: Collection<VendingRecord>,
 }
 
 impl MongoDbVendingRecordRepository {
-    pub fn new(client: Client) -> Self {
-        Self { client }
+    pub fn from_collection(collection: Collection<VendingRecord>) -> Self {
+        Self { collection }
     }
 }
 
@@ -19,11 +19,34 @@ impl MongoDbVendingRecordRepository {
 impl VendingRecordRepository for MongoDbVendingRecordRepository {
     async fn get_vending_records(
         &self,
-        _start_date: DateTime<Utc>,
-        _end_date: DateTime<Utc>,
+        start_date: DateTime<Utc>,
+        end_date: DateTime<Utc>,
     ) -> Result<Vec<VendingRecord>, Box<dyn Error>> {
-        // TODO: Implement actual MongoDB query
-        // For now, return empty vector to make it compile
-        Ok(Vec::new())
+        // Convert chrono DateTime to MongoDB DateTime
+        let start_bson = mongodb::bson::DateTime::from_millis(start_date.timestamp_millis());
+        let end_bson = mongodb::bson::DateTime::from_millis(end_date.timestamp_millis());
+
+        // Create filter for date range
+        let filter = doc! {
+            "timestamp": {
+                "$gte": start_bson,
+                "$lte": end_bson
+            }
+        };
+
+        // Execute query
+        let mut cursor = self.collection.find(filter).await?;
+        let mut records = Vec::new();
+
+        // Collect results
+        use futures_util::stream::StreamExt;
+        while let Some(result) = cursor.next().await {
+            match result {
+                Ok(record) => records.push(record),
+                Err(e) => return Err(Box::new(e)),
+            }
+        }
+
+        Ok(records)
     }
 }

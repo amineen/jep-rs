@@ -34,3 +34,32 @@ pub struct VendingRecord {
     #[serde(rename = "remainingCredit", default)]
     pub remaining_credit: Option<f64>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct DailySummary {
+    pub date: String, //YYYY-MM-DD
+    pub total_transactions: u32,
+    pub total_amount: f64,
+    pub total_kwh: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct VendingStationSummary {
+    pub vending_station: String,
+    pub total_transactions: u32,
+    pub total_amount: f64,
+    pub total_kwh: f64,
+    pub period_start: String, //YYYY-MM-DD
+    pub period_end: String,   //YYYY-MM-DD
+    pub daily_summaries: Vec<DailySummary>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct VendingSummary {
+    pub total_transactions: u32,
+    pub total_amount: f64,
+    pub total_kwh: f64,
+    pub period_start: String, //YYYY-MM-DD
+    pub period_end: String,   //YYYY-MM-DD
+    pub vending_station_summaries: Vec<VendingStationSummary>,
+}

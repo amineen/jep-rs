@@ -4,7 +4,7 @@ mod model;
 mod repositories;
 
 use actix_web::{App, HttpServer, middleware::Logger, web};
-use api::{configure_health_routes, configure_vending_routes};
+use api::{configure_health_routes, configure_vending_routes, configure_vending_summary_routes};
 use database::DatabaseConnection;
 
 #[actix_web::main]
@@ -40,6 +40,7 @@ async fn main() -> std::io::Result<()> {
     println!("🏥 Health check endpoint: http://127.0.0.1:8092/health");
     println!("🔍 Ready check endpoint: http://127.0.0.1:8092/health/ready");
     println!("📊 Vending records API: http://127.0.0.1:8092/api/vending-records");
+    println!("📊 Vending summary API: http://127.0.0.1:8092/api/vending-records/summary");
 
     HttpServer::new(move || {
         App::new()
@@ -52,6 +53,7 @@ async fn main() -> std::io::Result<()> {
             .configure(configure_health_routes)
             // Configure vending records routes
             .configure(configure_vending_routes)
+            .configure(configure_vending_summary_routes)
     })
     .bind("127.0.0.1:8092")?
     .run()

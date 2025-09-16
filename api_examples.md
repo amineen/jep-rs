@@ -12,15 +12,33 @@ curl -X GET http://127.0.0.1:8092/health
 curl -X GET http://127.0.0.1:8092/health/ready
 ```
 
-## Vending Records Endpoint
+## Vending Records Endpoints
 
 ### Get Vending Records
 ```bash
 # Get all records (defaults to last 30 days)
 curl -X GET http://127.0.0.1:8092/api/vending-records
 
-# Get records with specific date range
+# Get records with date-only format (simple)
+curl -X GET "http://127.0.0.1:8092/api/vending-records?start_date=2024-01-01&end_date=2024-12-31"
+
+# Get records with full datetime format (precise)
 curl -X GET "http://127.0.0.1:8092/api/vending-records?start_date=2024-01-01T00:00:00Z&end_date=2024-12-31T23:59:59Z"
+```
+
+### Get Vending Summary
+```bash
+# Get summary for last 30 days (default)
+curl -X GET http://127.0.0.1:8092/api/vending-records/summary
+
+# Get summary with date-only format (simple)
+curl -X GET "http://127.0.0.1:8092/api/vending-records/summary?start_date=2024-01-01&end_date=2024-01-31"
+
+# Get summary with full datetime format (precise)
+curl -X GET "http://127.0.0.1:8092/api/vending-records/summary?start_date=2024-01-01T00:00:00Z&end_date=2024-01-31T23:59:59Z"
+
+# Pretty formatted with jq
+curl -s "http://127.0.0.1:8092/api/vending-records/summary?start_date=2024-01-01&end_date=2024-01-31" | jq
 ```
 
 ## Response Format
@@ -37,7 +55,7 @@ All API responses follow this structure:
 }
 ```
 
-### Successful Response Example:
+### Successful Response Example (Records):
 ```json
 {
   "success": true,
@@ -64,6 +82,61 @@ All API responses follow this structure:
 }
 ```
 
+### Successful Summary Response Example:
+```json
+{
+  "success": true,
+  "message": "Retrieved vending summary for period 2024-01-01 to 2024-01-31 (150 total transactions)",
+  "data": {
+    "total_transactions": 150,
+    "total_amount": 12500.75,
+    "total_kwh": 8333.50,
+    "period_start": "2024-01-01",
+    "period_end": "2024-01-31",
+    "vending_station_summaries": [
+      {
+        "vending_station": "Station A",
+        "total_transactions": 75,
+        "total_amount": 6250.25,
+        "total_kwh": 4166.75,
+        "period_start": "2024-01-01",
+        "period_end": "2024-01-31",
+        "daily_summaries": [
+          {
+            "date": "2024-01-01",
+            "total_transactions": 5,
+            "total_amount": 425.50,
+            "total_kwh": 283.67
+          },
+          {
+            "date": "2024-01-02",
+            "total_transactions": 8,
+            "total_amount": 680.80,
+            "total_kwh": 453.87
+          }
+        ]
+      },
+      {
+        "vending_station": "Station B",
+        "total_transactions": 75,
+        "total_amount": 6250.50,
+        "total_kwh": 4166.75,
+        "period_start": "2024-01-01",
+        "period_end": "2024-01-31",
+        "daily_summaries": [
+          {
+            "date": "2024-01-01",
+            "total_transactions": 3,
+            "total_amount": 255.30,
+            "total_kwh": 170.20
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
 ### Error Response Example:
 ```json
 {
@@ -76,8 +149,20 @@ All API responses follow this structure:
 ## Query Parameters
 
 ### Date Range Queries
-- `start_date`: ISO 8601 format (e.g., "2024-01-01T00:00:00Z") - defaults to 30 days ago
-- `end_date`: ISO 8601 format (e.g., "2024-12-31T23:59:59Z") - defaults to now
+Both endpoints support flexible date formats:
+
+**Simple date format (recommended):**
+- `start_date=2024-01-01` - Date only (time set to 00:00:00)
+- `end_date=2024-12-31` - Date only (time set to 23:59:59.999)
+
+**Full datetime format (precise):**
+- `start_date=2024-01-01T00:00:00Z` - Full ISO 8601 datetime
+- `end_date=2024-12-31T23:59:59Z` - Full ISO 8601 datetime
+
+**Defaults:**
+- If no dates provided: Returns last 30 days
+- `start_date` defaults to 30 days ago
+- `end_date` defaults to now
 
 ## HTTP Status Codes
 

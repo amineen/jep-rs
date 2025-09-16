@@ -1,4 +1,4 @@
-use crate::model::VendingRecord;
+use crate::model::{VendingRecord, VendingSummary};
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use std::error::Error;
@@ -11,4 +11,9 @@ pub trait VendingRecordRepository: Send + Sync {
         start_date: DateTime<Utc>,
         end_date: DateTime<Utc>,
     ) -> Result<Vec<VendingRecord>, Box<dyn Error>>;
+    async fn get_vending_summary(
+        &self,
+        start_date: DateTime<Utc>,
+        end_date: DateTime<Utc>,
+    ) -> Result<VendingSummary, Box<dyn Error>>;
 }

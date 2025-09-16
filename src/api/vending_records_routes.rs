@@ -54,14 +54,15 @@ pub async fn get_vending_records(
 ) -> Result<HttpResponse> {
     // Parse date range or use defaults
     let start_date = match &query.start_date {
-        Some(date_str) => parse_flexible_date(date_str, false)
-            .map_err(|e| actix_web::error::ErrorBadRequest(e))?,
+        Some(date_str) => {
+            parse_flexible_date(date_str, false).map_err(actix_web::error::ErrorBadRequest)?
+        }
         None => Utc::now() - chrono::Duration::days(30), // Default: last 30 days
     };
 
     let end_date = match &query.end_date {
         Some(date_str) => {
-            parse_flexible_date(date_str, true).map_err(|e| actix_web::error::ErrorBadRequest(e))?
+            parse_flexible_date(date_str, true).map_err(actix_web::error::ErrorBadRequest)?
         }
         None => Utc::now(), // Default: now
     };
@@ -96,14 +97,15 @@ pub async fn get_vending_summary(
 ) -> Result<HttpResponse> {
     // Parse date range or use defaults
     let start_date = match &query.start_date {
-        Some(date_str) => parse_flexible_date(date_str, false)
-            .map_err(|e| actix_web::error::ErrorBadRequest(e))?,
+        Some(date_str) => {
+            parse_flexible_date(date_str, false).map_err(actix_web::error::ErrorBadRequest)?
+        }
         None => Utc::now() - chrono::Duration::days(30), // Default: last 30 days
     };
 
     let end_date = match &query.end_date {
         Some(date_str) => {
-            parse_flexible_date(date_str, true).map_err(|e| actix_web::error::ErrorBadRequest(e))?
+            parse_flexible_date(date_str, true).map_err(actix_web::error::ErrorBadRequest)?
         }
         None => Utc::now(), // Default: now
     };

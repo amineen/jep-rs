@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+actix-web = "4"
+mongodb = "3.3.0"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+dotenvy = "0.15"
+futures-util = "0.3"
+actix-cors = "0.7.1"
+actix-ratelimit = "0.3"
+async-trait = "0.1"
